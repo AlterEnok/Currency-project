@@ -1,0 +1,34 @@
+
+.chart-container {
+  padding: 20px;
+}
+
+.chart-heading {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.chart-select-container {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+
+.chart-select {
+  width: 300px;
+  margin-right: 10px;
+}
+
+.chart-wrapper {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.chart-title {
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: left;
+}

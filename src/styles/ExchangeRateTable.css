@@ -1,0 +1,48 @@
+.exchange-rate-container {
+  padding: 20px;
+}
+
+.exchange-rate-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.exchange-rate-table-container {
+  max-height: 400px;
+  overflow-y: scroll;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.exchange-rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+.exchange-rate-table thead {
+  background-color: #f4f4f4;
+  text-align: left;
+}
+
+.exchange-rate-table th {
+  padding: 8px;
+  border-bottom: 2px solid #ddd;
+  font-weight: bold;
+}
+
+.exchange-rate-table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.exchange-rate-table tr:nth-child(even) {
+  background-color: #fff;
+}
+
+.exchange-rate-table tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
