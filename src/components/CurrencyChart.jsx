@@ -3,22 +3,23 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { getCurrencyRates } from '../services/currencyService';
 import Select from 'react-select';
-import NavigationBar from './NavigationBar';
-import '../styles/CurrencyChart.css'; 
+import '../styles/CurrencyChart.css';
 
 const CurrencyChart = () => {
   const [chartData, setChartData] = useState([]);
-  const [setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [currencies, setCurrencies] = useState([]);
-  const [setBaseCurrency] = useState('');
+  const [baseCurrency, setBaseCurrency] = useState('');
   const [selectedCurrencies, setSelectedCurrencies] = useState([]);
 
   useEffect(() => {
     const fetchCurrencyData = async () => {
       try {
+        setLoading(true); // Начало загрузки
         const data = await getCurrencyRates();
         const baseCurrency = data.base;
         setBaseCurrency(baseCurrency);
+
         const availableCurrencies = Object.keys(data.rates);
         setCurrencies(availableCurrencies);
 
@@ -32,10 +33,10 @@ const CurrencyChart = () => {
         }));
 
         setChartData(formattedData);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching currency data:', error);
-        setLoading(false);
+      } finally {
+        setLoading(false); // Завершение загрузки
       }
     };
 
@@ -45,10 +46,10 @@ const CurrencyChart = () => {
   const handleCurrencySelection = (selectedOptions) => {
     setSelectedCurrencies(selectedOptions ? selectedOptions.map(option => option.value) : []);
   };
-  
+
   const seriesData = selectedCurrencies.map(currency => ({
     name: currency,
-    data: chartData.map(data => data[currency]),
+    data: chartData.map(data => data[currency] || 0),
   }));
 
   const options = {
@@ -59,9 +60,12 @@ const CurrencyChart = () => {
     series: seriesData,
   };
 
+  if (loading) {
+    return <div>Загрузка данных...</div>;
+  }
+
   return (
     <div className="chart-container">
-      <NavigationBar />
       <h2 className="chart-title">Графік валют</h2>
 
       <div className="chart-select-container">

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCurrencyRates } from '../services/currencyService';
-import NavigationBar from './NavigationBar';
-import '../styles/ExchangeRateTable.css'; // Импортируем стили
+import '../styles/ExchangeRateTable.css';
 
 const ExchangeRateTable = () => {
   const [rates, setRates] = useState({});
@@ -23,37 +22,29 @@ const ExchangeRateTable = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div>
-        <NavigationBar />
-        <p>Завантаження курсів валют...</p>
-      </div>
-    );
+    return <p>Завантаження курсів валют...</p>;
   }
 
   return (
-    <div>
-      <NavigationBar />
-      <div className="exchange-rate-container">
-        <h2 className="exchange-rate-title">Курси валют</h2>
-        <div className="exchange-rate-table-container">
-          <table className="exchange-rate-table">
-            <thead>
-              <tr>
-                <th>Валюта</th>
-                <th>Курс (відносно USD)</th>
+    <div className="exchange-rate-container">
+      <h2 className="exchange-rate-title">Курси валют</h2>
+      <div className="exchange-rate-table-container">
+        <table className="exchange-rate-table">
+          <thead>
+            <tr>
+              <th>Валюта</th>
+              <th>Курс (відносно USD)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(rates).map(([currency, rate]) => (
+              <tr key={currency}>
+                <td>{currency}</td>
+                <td>{rate.toFixed(6)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {Object.entries(rates).map(([currency, rate], index) => (
-                <tr key={currency}>
-                  <td>{currency}</td>
-                  <td>{rate.toFixed(6)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const AuthModal = ({ onClose }) => {
+const AuthModal = ({ onClose, onAuthSuccess }) => {
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Лоадер
 
   const toggleForm = () => {
     setIsRegister(!isRegister);
@@ -17,15 +18,23 @@ const AuthModal = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = isRegister ? '/register' : '/login';
+
+    setIsLoading(true); // Включаем лоадер
     try {
-        const response = await axios.post(`http://localhost:3001${url}`, formData);
-        setMessage(response.data.message);
-      } catch (error) {
-        if (error.response) {
-          setMessage(error.response.data.message);
-        } else {
-          setMessage(error.message);
-        }
+      const response = await axios.post(`http://localhost:3001${url}`, formData);
+      setMessage(response.data.message);
+      if (response.status === 200) {
+        onAuthSuccess();
+        onClose();
+      }
+    } catch (error) {
+      if (error.response) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage(error.message);
+      }
+    } finally {
+      setIsLoading(false); // Отключаем лоадер
     }
   };
 
@@ -71,14 +80,47 @@ const AuthModal = ({ onClose }) => {
         </button>
 
         <h2>{isRegister ? 'Реєстрація' : 'Авторизація'}</h2>
-        <form onSubmit={handleSubmit} style={{ width: '100%', boxSizing: 'border-box' }}>
-          {isRegister && (
+
+        {isLoading ? (
+          <div style={{ margin: '20px 0' }}>
+            <div
+              style={{
+                border: '4px solid #f3f3f3',
+                borderTop: '4px solid #ff0054',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
+                margin: 'auto',
+                animation: 'spin 1s linear infinite',
+              }}
+            ></div>
+            <p>Завантаження...</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ width: '100%', boxSizing: 'border-box' }}>
+            {isRegister && (
+              <div style={{ marginBottom: '10px' }}>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Ім'я"
+                  value={formData.name}
+                  onChange={handleChange}
+                  style={{
+                    width: 'calc(100% - 20px)',
+                    padding: '10px',
+                    marginBottom: '10px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            )}
             <div style={{ marginBottom: '10px' }}>
               <input
-                type="text"
-                name="name"
-                placeholder="Ім'я"
-                value={formData.name}
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
                 onChange={handleChange}
                 style={{
                   width: 'calc(100% - 20px)',
@@ -88,52 +130,38 @@ const AuthModal = ({ onClose }) => {
                 }}
               />
             </div>
-          )}
-          <div style={{ marginBottom: '10px' }}>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="password"
+                name="password"
+                placeholder="Пароль"
+                value={formData.password}
+                onChange={handleChange}
+                style={{
+                  width: 'calc(100% - 20px)',
+                  padding: '10px',
+                  marginBottom: '10px',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+            <button
+              type="submit"
               style={{
-                width: 'calc(100% - 20px)',
-                padding: '10px',
-                marginBottom: '10px',
-                boxSizing: 'border-box',
+                background: '#ff0054',
+                color: '#fff',
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                width: '100%',
               }}
-            />
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <input
-              type="password"
-              name="password"
-              placeholder="Пароль"
-              value={formData.password}
-              onChange={handleChange}
-              style={{
-                width: 'calc(100% - 20px)',
-                padding: '10px',
-                marginBottom: '10px',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-          <button
-            type="submit"
-            style={{
-              background: '#ff0054',
-              color: '#fff',
-              padding: '10px 20px',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              width: '100%',
-            }}
-          >
-            {isRegister ? 'Зареєструватися' : 'Увійти'}
-          </button>
-        </form>
+            >
+              {isRegister ? 'Зареєструватися' : 'Увійти'}
+            </button>
+          </form>
+        )}
+
         {message && <p style={{ marginTop: '10px', color: 'red' }}>{message}</p>}
         <p style={{ marginTop: '10px' }}>
           {isRegister ? 'Вже маєте акаунт?' : 'Немає акаунта?'}{' '}
@@ -144,19 +172,6 @@ const AuthModal = ({ onClose }) => {
             {isRegister ? 'Увійти' : 'Зареєструватися'}
           </span>
         </p>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#ff0054',
-            marginTop: '20px',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-          }}
-        >
-          Закрити
-        </button>
       </div>
     </div>
   );
